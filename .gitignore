@@ -1,8 +1,7 @@
-/.vscode/
-/.pytest_cache/
-/__pycache__/
+.pytest_cache
 *hint_optimizer.py
 *ml.py
+.coverage
 .vscode
 *.pyc
 __pycache__/
