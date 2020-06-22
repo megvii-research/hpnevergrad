@@ -36,17 +36,31 @@ if __name__ == "__main__":
 
 
 # TODO
-User can assign an optimization type in hpman. eg:
+Hint the [behaviors](https://facebookresearch.github.io/nevergrad/parametrization_ref.html#nevergrad.p.Array) of the nevergrad, including set_bounds, set_mutation, set_integer_casting.
+
+
 ```python
-lr = _('learning_rate', 1e-3, range=[1e-3, 1.0], scale='log',optimizer='RandomSearch')
+lr = _('learning_rate', 1e-3, range=[1e-3, 1.0], scale='log',custom='gaussian')
 parametrization = hpnevergrad.hpng(_)
 recommendation = optim.minimize(fake_training)
+
 ```
 is equivalent to
 
 ```python
-lr = _('learning_rate', 1e-3, range=[1e-3, 1.0], scale='log',optimizer='RandomSearch')
-parametrization = hpnevergrad.hpng(_)
-recommendation = optim.minimize(fake_training)
-optim = ng.optimizers.registry['RandomSearch'](parametrization=parametrization, budget=budget)
+lr=ng.p.Log(lower=0.001, upper=1.0)
+bs=ng.p.Scalar(lower=1, upper=12).set_integer_casting()
+arch=ng.p.Choice(["conv", "fc"])
+
+lr.set_mutation(custom='gaussian')
+
+
+parametrization = ng.p.Instrumentation(
+    learning_rate=lr,
+    batch_size=bs,
+    architecture=arch
+)
+
+optimizer = ng.optimizers.OnePlusOne(parametrization=parametrization, budget=100)
+recommendation = optimizer.minimize(fake_training)
 ```
