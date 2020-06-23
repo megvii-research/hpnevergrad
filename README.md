@@ -36,8 +36,8 @@ if __name__ == "__main__":
 ```
 
 
-# Hint the behaviors of the nevergrad
-Hint the [behaviors of the nevergrad](https://facebookresearch.github.io/nevergrad/parametrization_ref.html#nevergrad.p.Array), including set_bounds, set_mutation, set_integer_casting. These behaviors can be finished simply in hpman hyperparameter declaration.
+# Simplify the behaviors of the nevergrad
+Simplify the [behaviors of the nevergrad](https://facebookresearch.github.io/nevergrad/parametrization_ref.html#nevergrad.p.Array), including set_bounds, set_mutation, set_integer_casting. These behaviors can be finished simply in hpman hyperparameter declaration.
 ```python
 # `lr.set_mutation(custom='gaussian')` can finished simply in hpman hyperparameter declaration.
 lr = _('learning_rate', 1e-3, range=[1e-3, 1.0], scale='log',custom='gaussian')

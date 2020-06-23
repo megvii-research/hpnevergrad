@@ -1,6 +1,4 @@
 .pytest_cache
-*hint_optimizer.py
-*ml.py
 .coverage
 .vscode
 *.pyc

@@ -15,7 +15,6 @@ import hpnevergrad
 
 class Test(object):
     def _make_basic(self):
-        #fpath = str(fpath)
         _ = hpman.HyperParameterManager("_")
         parser = argparse.ArgumentParser()
         _.parse_file(__file__)
