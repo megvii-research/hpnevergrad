@@ -15,6 +15,52 @@ class NgMethod(object):
         """
         self.value = value
         self.hint = hint
+        self.bounds_kwargs = {}
+        self.mutation_kwargs = {}
+        self.casting_kwargs = {}
+        self.method = ng.p.Parameter()
+
+    def get_sets(self):
+        """
+        Save specific behaviors kwargs from hpman's hint to feed nevergrad methods, including set_bounds, set_mutation, set_integer_casting.
+        """
+        # Save set_bounds kwargs from hpman's hint.
+        if 'range' in self.hint.keys():
+            self.bounds_kwargs['lower'], self.bounds_kwargs[
+                'upper'] = self.hint.pop('range')
+        if 'method' in self.hint.keys():
+            self.bounds_kwargs['method'] = self.hint.pop('method')
+        if 'full_range_sampling' in self.hint.keys():
+            self.bounds_kwargs['full_range_sampling'] = self.hint.pop(
+                'full_range_sampling')
+
+        # Save set_mutation kwargs from hpman's hint.
+        if 'sigma' in self.hint.keys():
+            self.mutation_kwargs['sigma'] = self.hint.pop('sigma')
+        if 'exponent' in self.hint.keys():
+            self.mutation_kwargs['exponent'] = self.hint.pop('exponent')
+        if 'custom' in self.hint.keys():
+            self.mutation_kwargs['custom'] = self.hint.pop('custom')
+
+        # Save set_integer_casting kwargs from hpman's hint.
+        if 'set_integer_casting' in self.hint.keys(
+        ) and self.hint['set_integer_casting'] == True:
+            self.casting_kwargs['set_integer_casting'] = self.hint.pop(
+                'set_integer_casting')
+
+    def add_sets(self):
+        """
+        Feed specific behaviors kwargs to nevergrad methods.
+        """
+        # hint nevergrad method set_bounds
+        if len(self.bounds_kwargs) > 0:
+            self.method.set_bounds(**self.bounds_kwargs)
+        # hint nevergrad method set_mutation
+        if len(self.mutation_kwargs) > 0:
+            self.method.set_mutation(**self.mutation_kwargs)
+        # hint nevergrad method set_integer_casting
+        if len(self.casting_kwargs) > 0:
+            self.method.set_integer_casting()
 
     def log_ng(self):
         """
@@ -22,41 +68,48 @@ class NgMethod(object):
         mutated by Gaussian mutation in log-scale.
         """
         self.hint.pop('scale')
-        if 'range' in self.hint.keys():
-            self.hint['lower'], self.hint['upper'] = self.hint.pop('range')
         self.hint['init'] = self.value
-
-        return ng.p.Log(**self.hint)
+        self.get_sets()
+        self.method = ng.p.Log(**self.hint)
+        self.add_sets()
+        return self.method
 
     def scalar_ng(self):
         """
         :return: nevergrad.p.Scalar. Parameter representing a scalar. 
         """
-        if 'range' in self.hint.keys():
-            self.hint['lower'], self.hint['upper'] = self.hint.pop('range')
         self.hint['init'] = self.value
-        return ng.p.Scalar(**self.hint)
+        self.get_sets()
+        self.method = ng.p.Scalar(**self.hint)
+        self.add_sets()
+        return self.method
 
     def choice_ng(self):
         """
         :return: nevergrad.p.Choice. Unordered categorical parameter, 
             randomly choosing one of the provided choice options as a value. 
         """
-        return ng.p.Choice(**self.hint)
+        self.method = ng.p.Choice(**self.hint)
+        return self.method
 
     def transition_choice_ng(self):
         """
         :return: nevergrad.p.TransitionChoice. Ordered categorical parameter, 
             choosing one of the provided choice options as a value, with continuous transitions.
         """
-        return ng.p.TransitionChoice(**self.hint)
+        self.hint.pop('transitions')
+        self.method = ng.p.TransitionChoice(**self.hint)
+        return self.method
 
     def array_ng(self):
         """
         :return: nevergrad.p.Array.  
         """
         self.hint['init'] = self.value
-        return ng.p.Array(**self.hint)
+        self.get_sets()
+        self.method = ng.p.Array(**self.hint)
+        self.add_sets()
+        return self.method
 
 
 def get_method(value, hint):

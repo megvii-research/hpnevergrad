@@ -20,8 +20,16 @@ def fake_training(learning_rate: float, batch_size: int,
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    lr = _('learning_rate', 1e-3, range=[1e-3, 1.0], scale='log')
-    bs = _('batch_size', 1, range=[1, 12])
+
+    # `lr.set_mutation(custom='gaussian')` can finished simply in hpman hyperparameter declaration.
+    lr = _('learning_rate',
+           1e-3,
+           range=[1e-3, 1.0],
+           scale='log',
+           custom='gaussian')
+    # `bs.set_bounds(method='clipping')` can finished simply in hpman hyperparameter declaration.
+    bs = _('batch_size', 1, range=[1, 12], method='clipping')
+
     arch = _('architecture', 'conv', choices=['conv', 'fc'])
     _.parse_file(__file__)
 
