@@ -1,1 +1,2 @@
-from .hpng import hpng
+from .pkginfo import __version__
+from . import hpng

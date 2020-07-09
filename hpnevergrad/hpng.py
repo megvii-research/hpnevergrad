@@ -131,8 +131,8 @@ def get_method(value, hint):
     return method_type
 
 
-def hpng(hp_mgr: hpman.HyperParameterManager):
-    """Bridging the gap between nevergrad and hpman.
+def get_parametrization(hp_mgr: hpman.HyperParameterManager):
+    """Define hyperparameters in nevergrad parametrization type.
 
     :param hp_mgr: The hyperparameter manager from `hpman`. It is
         usually an 'underscore' variable obtained by `from hpman.m import _`
@@ -151,3 +151,24 @@ def hpng(hp_mgr: hpman.HyperParameterManager):
                 method = getattr(NgMethod(value, hint), method_type)
                 kw[name] = method()
     return ng.p.Instrumentation(**kw)
+
+
+import typing as tp
+from typing import Callable
+
+
+def get_objective_function(func: tp.Callable[[], float],
+                           hpm: hpman.HyperParameterManager):
+    """
+    load hyperparameter in hpman to objective_function: a warpper
+
+    :param func: The objective function to search hyparameters. It is
+        usually a train function in deep learning.
+    :param hpm: The HyperParameterManager in hpman.
+    :return: the warpper of the object function.
+    """
+    def objective_function(**kwargs):
+        params = hpm.get_values()
+        return func(**params)
+
+    return objective_function
