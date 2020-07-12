@@ -24,7 +24,7 @@ class Test(object):
         arr1 = _('arr1', [[1, 2], [3, 4]], mutable_sigma=True)
         parametrization = hpng.get_parametrization(_)
         assert 'arr1' in parametrization.kwargs.keys()
-        arr2 = _('arr2', [300],
+        arr2 = _('arr2', [300,],
                  method='constraint',
                  set_integer_casting=True,
                  exponent=3,

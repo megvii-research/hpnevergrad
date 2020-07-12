@@ -1,13 +1,13 @@
 import nevergrad as ng
 import argparse
 import hpman
-from hpman import (HyperParameterManager, HyperParameterOccurrence, L)
+from hpman import L
 import numpy as np
 
 
 class NgMethod(object):
     """
-    Get hyperparameter nevergrad parameter type from hpman.
+    Get nevergrad parameter type from hpman.
     :param value: float. Initial value of the hyparameter. 
     :param hint: Dict. Hints provided by user of this occurrence 
         of the hyperparameter.
