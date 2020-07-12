@@ -7,21 +7,32 @@ import numpy as np
 
 class NgMethod(object):
     """
-    Get hyperparameter nevergrad parameter type.
+    Get hyperparameter nevergrad parameter type from hpman.
+    :param value: float. Initial value of the hyparameter. 
+    :param hint: Dict. Hints provided by user of this occurrence 
+        of the hyperparameter.
+    :bounds_kwargs: Dict. Save set_bounds kwargs from hpman's hint.
+    :mutation_kwargs: Dict. Save set_mutation kwargs from hpman's hint.
+    :casting_kwargs: Dict. Save set_integer_casting kwargs from hpman's hint.
+    :method: type of parameter in nevergrad.
     """
 
-    # value = None
-    # hint = None
-    # bounds_kwargs = {}
-    # mutation_kwargs = {}
-    # casting_kwargs = {}
-    # method = ng.p.Parameter()
+    value = None
+    hint = None
+    bounds_kwargs = {}
+    mutation_kwargs = {}
+    casting_kwargs = {}
+    method = ng.p.Parameter()
 
     def __init__(self, value, hint):
         """
-        :param value: float. Initial value of the variable. 
+        :param value: float. Initial value of the hyparameter. 
         :param hint: Dict. Hints provided by user of this occurrence 
             of the hyperparameter.
+        :bounds_kwargs: Dict. Save set_bounds kwargs from hpman's hint.
+        :mutation_kwargs: Dict. Save set_mutation kwargs from hpman's hint.
+        :casting_kwargs: Dict. Save set_integer_casting kwargs from hpman's hint.
+        :method: type of parameter in nevergrad.
         """
         self.value = value
         self.hint = hint
@@ -75,8 +86,7 @@ class NgMethod(object):
 
     def log_ng(self):
         """
-        :return: nevergrad.p.Log. Parameter representing a positive 
-            variable, mutated by Gaussian mutation in log-scale.
+        :return: nevergrad.p.Log. 
         """
         self.hint.pop('scale')
         self.hint['init'] = self.value
@@ -87,7 +97,7 @@ class NgMethod(object):
 
     def scalar_ng(self):
         """
-        :return: nevergrad.p.Scalar. Parameter representing a scalar. 
+        :return: nevergrad.p.Scalar.
         """
         self.hint['init'] = self.value
         self.get_sets()
@@ -97,17 +107,14 @@ class NgMethod(object):
 
     def choice_ng(self):
         """
-        :return: nevergrad.p.Choice. Unordered categorical parameter, 
-            randomly choosing one of the provided choice options as a value. 
+        :return: nevergrad.p.Choice. 
         """
         self.method = ng.p.Choice(**self.hint)
         return self.method
 
     def transition_choice_ng(self):
         """
-        :return: nevergrad.p.TransitionChoice. Ordered categorical parameter, 
-            choosing one of the provided choice options as a value, 
-            with continuous transitions.
+        :return: nevergrad.p.TransitionChoice. 
         """
         self.hint.pop('transitions')
         self.method = ng.p.TransitionChoice(**self.hint)
