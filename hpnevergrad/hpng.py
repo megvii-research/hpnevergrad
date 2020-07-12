@@ -2,12 +2,21 @@ import nevergrad as ng
 import argparse
 import hpman
 from hpman import (HyperParameterManager, HyperParameterOccurrence, L)
+import numpy as np
 
 
 class NgMethod(object):
     """
     Get hyperparameter nevergrad parameter type.
     """
+
+    # value = None
+    # hint = None
+    # bounds_kwargs = {}
+    # mutation_kwargs = {}
+    # casting_kwargs = {}
+    # method = ng.p.Parameter()
+
     def __init__(self, value, hint):
         """
         :param value: float. Initial value of the variable. 
@@ -108,14 +117,14 @@ class NgMethod(object):
         """
         :return: nevergrad.p.Array.  
         """
-        self.hint['init'] = self.value
+        self.hint['init'] = np.array(self.value)
         self.get_sets()
         self.method = ng.p.Array(**self.hint)
         self.add_sets()
         return self.method
 
 
-def get_method(value, hint):
+def get_method_type(value, hint):
     if 'choices' in hint.keys():
         if 'transitions' in hint.keys():
             method_type = 'transition_choice_ng'
@@ -126,8 +135,11 @@ def get_method(value, hint):
             method_type = 'log_ng'
         else:
             method_type = 'scalar_ng'
-    else:
+    # Hpman can not support ndarray type, we transfer list to ndarray.
+    elif isinstance(value, list):
         method_type = 'array_ng'
+    else:
+        raise TypeError("type error")
     return method_type
 
 
@@ -147,7 +159,7 @@ def get_parametrization(hp_mgr: hpman.HyperParameterManager):
                 hint = oc["hints"]
                 value = oc["value"]
                 name = oc["name"]
-                method_type = get_method(value, hint)
+                method_type = get_method_type(value, hint)
                 method = getattr(NgMethod(value, hint), method_type)
                 kw[name] = method()
     return ng.p.Instrumentation(**kw)
