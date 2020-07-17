@@ -8,8 +8,6 @@ import nevergrad as ng
 import os
 import sys
 
-o_path = os.getcwd()
-sys.path.append(o_path)
 from hpnevergrad import hpng
 
 
@@ -20,56 +18,79 @@ class Test(object):
         return _
 
     def test_array_basic(self) -> None:
-        _ = self._make_basic()
-        arr1 = _('arr1', [[1, 2], [3, 4]], mutable_sigma=True)
-        parametrization = hpng.get_parametrization(_)
+        arr1_hpm = hpman.HyperParameterManager("arr1_hpm")
+        arr1_hpm.parse_file(__file__)
+        arr1 = arr1_hpm('arr1', [[1, 2], [3, 4]], mutable_sigma=True)
+        parametrization = hpng.get_parametrization(arr1_hpm)
         assert 'arr1' in parametrization.kwargs.keys()
-        arr2 = _('arr2', [300,],
-                 method='constraint',
-                 set_integer_casting=True,
-                 exponent=3,
-                 custom='cauchy')
-        parametrization = hpng.get_parametrization(_)
+
+        arr2_hpm = hpman.HyperParameterManager("arr2_hpm")
+        arr2_hpm.parse_file(__file__)
+        arr2 = arr2_hpm('arr2', [
+            300,
+        ],
+                        method='constraint',
+                        set_integer_casting=True,
+                        exponent=3,
+                        custom='cauchy')
+        parametrization = hpng.get_parametrization(arr2_hpm)
         assert 'arr2' in parametrization.kwargs.keys()
 
     def test_log(self) -> None:
-        _ = self._make_basic()
-        log1 = _('log1', 0.02, range=[1e-3, 1.0], scale='log', exponent=3.0)
-        parametrization = hpng.get_parametrization(_)
+        log1_hpm = hpman.HyperParameterManager("log1_hpm")
+        log1_hpm.parse_file(__file__)
+        log1 = log1_hpm('log1',
+                        0.02,
+                        range=[1e-3, 1.0],
+                        scale='log',
+                        exponent=3.0)
+        parametrization = hpng.get_parametrization(log1_hpm)
         assert 'log1' in parametrization.kwargs.keys()
-        log2 = _('log2',
-                 0.02,
-                 range=[1e-3, 1.0],
-                 scale='log',
-                 exponent=3.0,
-                 sigma=3,
-                 custom='gaussian')
-        parametrization = hpng.get_parametrization(_)
+
+        log2_hpm = hpman.HyperParameterManager("log2_hpm")
+        log2_hpm.parse_file(__file__)
+        log2 = log2_hpm('log2',
+                        0.02,
+                        range=[1e-3, 1.0],
+                        scale='log',
+                        exponent=3.0,
+                        sigma=3,
+                        custom='gaussian')
+        parametrization = hpng.get_parametrization(log2_hpm)
         assert 'log2' in parametrization.kwargs.keys()
 
     def test_choice_repetitions(self) -> None:
-        _ = self._make_basic()
-        choice = _('choice', 0, choices=[0, 1, 2, 3], repetitions=2)
-        parametrization = hpng.get_parametrization(_)
+        choice_hpm = hpman.HyperParameterManager("choice_hpm")
+        choice_hpm.parse_file(__file__)
+        choice = choice_hpm('choice', 0, choices=[0, 1, 2, 3], repetitions=2)
+        parametrization = hpng.get_parametrization(choice_hpm)
         assert 'choice' in parametrization.kwargs.keys()
 
     def test_ordered_choice(self) -> None:
-        _ = self._make_basic()
-        transition_choice = _('transition_choice',
-                              2,
-                              choices=[0, 1, 2, 3],
-                              transitions=[-1000000, 10])
-        parametrization = hpng.get_parametrization(_)
+        transition_choice_hpm = hpman.HyperParameterManager(
+            "transition_choice_hpm")
+        transition_choice_hpm.parse_file(__file__)
+        transition_choice = transition_choice_hpm('transition_choice',
+                                                  2,
+                                                  choices=[0, 1, 2, 3],
+                                                  transitions=[-1000000, 10])
+        parametrization = hpng.get_parametrization(transition_choice_hpm)
         assert 'transition_choice' in parametrization.kwargs.keys()
 
     def test_get_objective_function(self) -> None:
-        def func(x):
+        def func(*args, **kwargs):
             return (x - 0.01)**2
 
-        hpm = hpman.HyperParameterManager("hpm")
-        hpm.parse_file(__file__)
-        x = hpm('x', 0.02, range=[1e-3, 1.0], scale='log', exponent=3.0)
-        objective_function = hpng.get_objective_function(func, hpm)
+        objective_function_hpm = hpman.HyperParameterManager(
+            "objective_function_hpm")
+        objective_function_hpm.parse_file(__file__)
+        x = objective_function_hpm('x',
+                                   0.02,
+                                   range=[1e-3, 1.0],
+                                   scale='log',
+                                   exponent=3.0)
+        objective_function = hpng.get_objective_function(
+            func, objective_function_hpm)
         assert callable(objective_function)
         ans = objective_function(x=x)
         assert ans == 0.0001

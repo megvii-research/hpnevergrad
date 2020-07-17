@@ -1,0 +1,86 @@
+#!/usr/bin/env python3
+import argparse
+from hpman import HyperParameterManager
+import os
+import sys
+import importlib
+from hpnevergrad import hpng
+import nevergrad as ng
+
+
+def optimizer_warpper(optim_type, budget, param):
+    optim = ng.optimizers.registry[optim_type](parametrization=param,
+                                               budget=budget)
+    return optim
+
+
+def split_module(module):
+    parts = module.split(":", 1)
+    if len(parts) != 2:
+        raise ImportError("Failed to find attribute")
+    f, obj = parts[0], parts[1]
+    return f, obj
+
+
+def import_func(module: str, obj: str):
+    """
+    parse the command line `module.py:obj` into the objective function
+    
+    :param module: A string of file name to parse.
+    :param obj: A string of the function in module.
+    """
+    # make the module readable for importlib
+    module = module.replace('/', '.')
+    module = module.rsplit('.', 1)[0]
+
+    mod = importlib.import_module(module)
+
+    try:
+        func = getattr(mod, obj)
+    except:
+        raise ImportError("Failed to find attribute %r in %r." % (obj, module))
+
+    if func is None:
+        raise ImportError("Failed to find application object: %r" % obj)
+
+    if not callable(func):
+        raise ImportError("Application object must be callable.")
+    return func
+
+
+def main():
+    op = sorted(ng.optimizers.registry.keys())
+    parser = argparse.ArgumentParser()
+    parser.add_argument(dest="module", nargs=1)
+    parser.add_argument("--placeholder",
+                        default="_",
+                        help="placeholder of hpman used in given files")
+    parser.add_argument("--optimizer",
+                        default="RandomSearch",
+                        choices=op,
+                        help="optimizer used to search hyperparameter")
+    parser.add_argument("--budget",
+                        default=100,
+                        help="number of allowed evaluations",
+                        type=int)
+
+    args, remain_args = parser.parse_known_args()
+
+    module = args.module[0]
+    hp_mgr = HyperParameterManager(args.placeholder)
+    optim_type = args.optimizer
+    budget = args.budget
+
+    f, obj = split_module(module)
+    hp_mgr.parse_file(f)
+
+    train = import_func(f, obj)
+    parametrization = hpng.get_parametrization(hp_mgr)
+    objective_function = hpng.get_objective_function(train, hp_mgr)
+    optimizer = optimizer_warpper(optim_type, budget, parametrization)
+    recommendation = optimizer.minimize(objective_function)
+    print(recommendation.kwargs)
+
+
+if __name__ == "__main__":
+    main()

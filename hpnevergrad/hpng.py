@@ -8,20 +8,22 @@ import numpy as np
 class NgMethod(object):
     """
     Get nevergrad parameter type from hpman.
-    :param value: float. Initial value of the hyparameter. 
-    :param hint: Dict. Hints provided by user of this occurrence 
-        of the hyperparameter.
-    :bounds_kwargs: Dict. Save set_bounds kwargs from hpman's hint.
-    :mutation_kwargs: Dict. Save set_mutation kwargs from hpman's hint.
-    :casting_kwargs: Dict. Save set_integer_casting kwargs from hpman's hint.
-    :method: type of parameter in nevergrad.
     """
 
-    value = None
-    hint = None
-    bounds_kwargs = {}
-    mutation_kwargs = {}
-    casting_kwargs = {}
+    value = None  # type: float
+    """Elaborate value"""
+
+    hint = None  # type: Dict[TODO]
+    """Hints of the hyperparameter."""
+
+    # XXX: (https://en.wikipedia.org/wiki/Passive_data_structure)
+    bounds_kwargs = None  # type: Dict[TODO]
+    """Save `set_bounds()` kwargs from hpman's hint."""
+    mutation_kwargs = None
+    """Save `set_mutation()` kwargs from hpman's hint."""
+    casting_kwargs = None
+    """Save `set_integer_casting()` kwargs from hpman's hint."""
+
     method = ng.p.Parameter()
 
     def __init__(self, value, hint):
@@ -29,9 +31,9 @@ class NgMethod(object):
         :param value: float. Initial value of the hyparameter. 
         :param hint: Dict. Hints provided by user of this occurrence 
             of the hyperparameter.
-        :bounds_kwargs: Dict. Save set_bounds kwargs from hpman's hint.
-        :mutation_kwargs: Dict. Save set_mutation kwargs from hpman's hint.
-        :casting_kwargs: Dict. Save set_integer_casting kwargs from hpman's hint.
+        :bounds_kwargs: Dict. Save `set_bounds()` kwargs from hpman's hint.
+        :mutation_kwargs: Dict. Save `set_mutation()` kwargs from hpman's hint.
+        :casting_kwargs: Dict. Save `set_integer_casting()` kwargs from hpman's hint.
         :method: type of parameter in nevergrad.
         """
         self.value = value
@@ -162,7 +164,7 @@ def get_parametrization(hp_mgr: hpman.HyperParameterManager):
         for i, oc in enumerate(
                 d.select(L.exist_attr("filename")).sorted(
                     L.order_by("filename"))):
-            if oc["hints"] is not None:
+            if len(oc["hints"]) > 0:
                 hint = oc["hints"]
                 value = oc["value"]
                 name = oc["name"]
@@ -175,19 +177,27 @@ def get_parametrization(hp_mgr: hpman.HyperParameterManager):
 import typing as tp
 from typing import Callable
 
+# def get_objective_function(func: tp.Callable[[], float],
+#                            hpm: hpman.HyperParameterManager):
+#     """
+#     load hyperparameter in hpman to objective_function: a warpper
 
-def get_objective_function(func: tp.Callable[[], float],
+#     :param func: The objective function to search hyparameters. It is
+#         usually a train function in deep learning.
+#     :param hpm: The HyperParameterManager in hpman.
+#     :return: the warpper of the object function.
+#     """
+#     def objective_function(**kwargs):
+#         params = hpm.get_values()
+#         return func(**params)
+
+#     return objective_function
+
+
+def get_objective_function(train: Callable[[], float],
                            hpm: hpman.HyperParameterManager):
-    """
-    load hyperparameter in hpman to objective_function: a warpper
-
-    :param func: The objective function to search hyparameters. It is
-        usually a train function in deep learning.
-    :param hpm: The HyperParameterManager in hpman.
-    :return: the warpper of the object function.
-    """
     def objective_function(**kwargs):
-        params = hpm.get_values()
-        return func(**params)
+        hpm.set_values(kwargs)
+        return train()
 
     return objective_function
