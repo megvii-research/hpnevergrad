@@ -3,6 +3,9 @@ import argparse
 import hpman
 from hpman import L
 import numpy as np
+import typing as tp
+from typing import Callable
+import importlib
 
 
 class NgMethod(object):
@@ -174,24 +177,7 @@ def get_parametrization(hp_mgr: hpman.HyperParameterManager):
     return ng.p.Instrumentation(**kw)
 
 
-import typing as tp
-from typing import Callable
 
-# def get_objective_function(func: tp.Callable[[], float],
-#                            hpm: hpman.HyperParameterManager):
-#     """
-#     load hyperparameter in hpman to objective_function: a warpper
-
-#     :param func: The objective function to search hyparameters. It is
-#         usually a train function in deep learning.
-#     :param hpm: The HyperParameterManager in hpman.
-#     :return: the warpper of the object function.
-#     """
-#     def objective_function(**kwargs):
-#         params = hpm.get_values()
-#         return func(**params)
-
-#     return objective_function
 
 
 def get_objective_function(train: Callable[[], float],
@@ -204,7 +190,6 @@ def get_objective_function(train: Callable[[], float],
 
 
 #hpng command line tool
-import importlib
 
 
 def optimizer_warpper(optim_type: str, budget: int, param: ng.p.Instrumentation):
@@ -214,6 +199,11 @@ def optimizer_warpper(optim_type: str, budget: int, param: ng.p.Instrumentation)
 
 
 def split_module(module):
+    """
+    split module string to file name and function name.
+
+    :param module: A string of the command line `module.py:obj`.
+    """
     parts = module.split(":", 1)
     if len(parts) != 2:
         raise ImportError("Failed to find attribute")
