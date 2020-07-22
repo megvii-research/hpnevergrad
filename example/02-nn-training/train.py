@@ -5,17 +5,13 @@ import numpy as np
 import argparse
 import torch
 import yaml
-import os
 from torch import optim
+import os
 
 from hpman.m import _
 import hpargparse
-
-import sys
 from hpnevergrad import hpng
 import nevergrad as ng
-
-
 
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -33,9 +29,8 @@ def run():
     optimizer_cls = {
         "adam": optim.Adam,
         "sgd": functools.partial(optim.SGD, momentum=0.9),
-    }[
-        _("optimizer", "adam")  # <-- hyperparameter
-    ]
+    }[_("optimizer", "adam")  # <-- hyperparameter
+      ]
 
     import model
 
@@ -46,8 +41,10 @@ def run():
 
     optimizer = optimizer_cls(
         net.parameters(),
-        lr=_("learning_rate", 1e-3, choices=[1e-4, 1e-3]),  # <-- hyperparameter
-        weight_decay=_("weight_decay", 1e-5, choices=[1e-5, 1e-4, 5e-4]),  # <-- hyperparameter
+        lr=_("learning_rate", 1e-3, choices=[1e-4,
+                                             1e-3]),  # <-- hyperparameter
+        weight_decay=_("weight_decay", 1e-5,
+                       choices=[1e-5, 1e-4, 5e-4]),  # <-- hyperparameter
     )
 
     import dataset
@@ -61,18 +58,18 @@ def run():
 
     rng = np.random.RandomState(_("seed", 42))  # <-- hyperparameter
 
-    for epoch in range(_("num_epochs", 30, choices=[5, 15, 30])):  # <-- hyperparameter
+    for epoch in range(_("num_epochs", 30,
+                         choices=[5, 15, 30])):  # <-- hyperparameter
         net.train()
         tq = tqdm(
             enumerate(
                 dataset.iter_dataset_batch(
                     rng,
                     train_ds,
-                    _("batch_size", 256, choices=[256, 1024]),  # <-- hyperparameter
+                    _("batch_size", 256, choices=[256,
+                                                  1024]),  # <-- hyperparameter
                     cuda=torch.cuda.is_available(),
-                )
-            )
-        )
+                )))
         for step, minibatch in tq:
             optimizer.zero_grad()
 
@@ -87,7 +84,9 @@ def run():
             tq.desc = "e:{} s:{} {}".format(
                 epoch,
                 step,
-                " ".join(["{}:{}".format(k, v) for k, v in sorted(metrics.items())]),
+                " ".join([
+                    "{}:{}".format(k, v) for k, v in sorted(metrics.items())
+                ]),
             )
 
         net.eval()
@@ -95,16 +94,14 @@ def run():
         # since mnist is a small dataset, we predict all values at once.
         Y_pred = net(test_ds["data"])
         metrics = model.compute_metrics(Y_pred, test_ds["labels"])
-        print(
-            "eval: {}".format(
-                " ".join(["{}:{}".format(k, v) for k, v in sorted(metrics.items())])
-            )
-        )
-        
+        print("eval: {}".format(" ".join(
+            ["{}:{}".format(k, v) for k, v in sorted(metrics.items())])))
+
         # Save the model. We intentionally not saving the model here for
         # tidiness of the example
         # torch.save(net, "model.pt")
         return float(metrics['misclassify'])
+
 
 if __name__ == "__main__":
     _.parse_file(BASE_DIR)

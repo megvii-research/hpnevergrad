@@ -177,9 +177,6 @@ def get_parametrization(hp_mgr: hpman.HyperParameterManager):
     return ng.p.Instrumentation(**kw)
 
 
-
-
-
 def get_objective_function(train: Callable[[], float],
                            hpm: hpman.HyperParameterManager):
     def objective_function(**kwargs):
@@ -192,7 +189,8 @@ def get_objective_function(train: Callable[[], float],
 #hpng command line tool
 
 
-def optimizer_warpper(optim_type: str, budget: int, param: ng.p.Instrumentation):
+def optimizer_warpper(optim_type: str, budget: int,
+                      param: ng.p.Instrumentation):
     optim = ng.optimizers.registry[optim_type](parametrization=param,
                                                budget=budget)
     return optim

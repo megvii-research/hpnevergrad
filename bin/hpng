@@ -1,12 +1,8 @@
 #!/usr/bin/env python3
 import argparse
 from hpman import HyperParameterManager
-import os
-import sys
-import importlib
 from hpnevergrad import hpng
 import nevergrad as ng
-
 
 
 def main():

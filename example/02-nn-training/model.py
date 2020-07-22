@@ -51,10 +51,6 @@ def compute_loss(y_pred, y_gt):
 
 def compute_metrics(y_pred, y_gt):
     return {
-        "misclassify": (y_pred.argmax(dim=1) != y_gt)
-        .detach()
-        .float()
-        .mean()
-        .cpu()
-        .numpy()
+        "misclassify":
+        (y_pred.argmax(dim=1) != y_gt).detach().float().mean().cpu().numpy()
     }

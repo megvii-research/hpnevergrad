@@ -1,6 +1,3 @@
-import sys
-import os
-
 from hpman.m import _
 
 from hpnevergrad import hpng
