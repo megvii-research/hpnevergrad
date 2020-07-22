@@ -8,44 +8,45 @@ from hpnevergrad import hpng
 import nevergrad as ng
 
 
-def optimizer_warpper(optim_type, budget, param):
-    optim = ng.optimizers.registry[optim_type](parametrization=param,
-                                               budget=budget)
-    return optim
+# def optimizer_warpper(optim_type, budget, param):
+#     optim = ng.optimizers.registry[optim_type](parametrization=param,
+#                                                budget=budget)
+#     return optim
 
 
-def split_module(module):
-    parts = module.split(":", 1)
-    if len(parts) != 2:
-        raise ImportError("Failed to find attribute")
-    f, obj = parts[0], parts[1]
-    return f, obj
+# def split_module(module):
+#     parts = module.split(":", 1)
+#     if len(parts) != 2:
+#         raise ImportError("Failed to find attribute")
+#     f, obj = parts[0], parts[1]
+#     return f, obj
 
 
-def import_func(module: str, obj: str):
-    """
-    parse the command line `module.py:obj` into the objective function
-    
-    :param module: A string of file name to parse.
-    :param obj: A string of the function in module.
-    """
-    # make the module readable for importlib
-    module = module.replace('/', '.')
-    module = module.rsplit('.', 1)[0]
+# def import_func(module: str, obj: str):
+#     """
+#     parse the command line `module.py:obj` into the objective function
 
-    mod = importlib.import_module(module)
+#     :param module: A string of file name to parse.
+#     :param obj: A string of the function in module.
+#     """
 
-    try:
-        func = getattr(mod, obj)
-    except:
-        raise ImportError("Failed to find attribute %r in %r." % (obj, module))
+#     # make the module readable for importlib
+#     module = module.replace('/', '.')
+#     module = module.rsplit('.', 1)[0]
 
-    if func is None:
-        raise ImportError("Failed to find application object: %r" % obj)
+#     mod = importlib.import_module(module)
 
-    if not callable(func):
-        raise ImportError("Application object must be callable.")
-    return func
+#     try:
+#         func = getattr(mod, obj)
+#     except:
+#         raise ImportError("Failed to find attribute %r in %r." % (obj, module))
+
+#     if func is None:
+#         raise ImportError("Failed to find application object: %r" % obj)
+
+#     if not callable(func):
+#         raise ImportError("Application object must be callable.")
+#     return func
 
 
 def main():
@@ -55,10 +56,11 @@ def main():
     parser.add_argument("--placeholder",
                         default="_",
                         help="placeholder of hpman used in given files")
+    # XXX: too much choices
     parser.add_argument("--optimizer",
                         default="RandomSearch",
-                        choices=op,
-                        help="optimizer used to search hyperparameter")
+                        choices=[op],
+                        help="optimizer used to search hyperparameter,you can find all optimizers in https://facebookresearch.github.io/nevergrad/optimizers_ref.html#optimizers ")
     parser.add_argument("--budget",
                         default=100,
                         help="number of allowed evaluations",
@@ -71,13 +73,13 @@ def main():
     optim_type = args.optimizer
     budget = args.budget
 
-    f, obj = split_module(module)
+    f, obj = hpng.split_module(module)
     hp_mgr.parse_file(f)
+    train = hpng.import_func(f, obj)
 
-    train = import_func(f, obj)
     parametrization = hpng.get_parametrization(hp_mgr)
     objective_function = hpng.get_objective_function(train, hp_mgr)
-    optimizer = optimizer_warpper(optim_type, budget, parametrization)
+    optimizer = hpng.optimizer_warpper(optim_type, budget, parametrization)
     recommendation = optimizer.minimize(objective_function)
     print(recommendation.kwargs)
 

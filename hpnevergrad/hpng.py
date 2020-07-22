@@ -201,3 +201,48 @@ def get_objective_function(train: Callable[[], float],
         return train()
 
     return objective_function
+
+
+#hpng command line tool
+import importlib
+
+
+def optimizer_warpper(optim_type: str, budget: int, param: ng.p.Instrumentation):
+    optim = ng.optimizers.registry[optim_type](parametrization=param,
+                                               budget=budget)
+    return optim
+
+
+def split_module(module):
+    parts = module.split(":", 1)
+    if len(parts) != 2:
+        raise ImportError("Failed to find attribute")
+    f, obj = parts[0], parts[1]
+    return f, obj
+
+
+def import_func(module: str, obj: str):
+    """
+    parse the command line `module.py:obj` into the objective function
+
+    :param module: A string of file name to parse.
+    :param obj: A string of the function in module.
+    """
+
+    # make the module readable for importlib
+    module = module.replace('/', '.')
+    module = module.rsplit('.', 1)[0]
+
+    mod = importlib.import_module(module)
+
+    try:
+        func = getattr(mod, obj)
+    except:
+        raise ImportError("Failed to find attribute %r in %r." % (obj, module))
+
+    if func is None:
+        raise ImportError("Failed to find application object: %r" % obj)
+
+    if not callable(func):
+        raise ImportError("Application object must be callable.")
+    return func

@@ -6,6 +6,7 @@ A [nevergrad](https://github.com/facebookresearch/nevergrad/) extension for [hpm
 After using hpman to define the hyperparameters, call hpnevergrad through a single line of code to define hyperparameters in nevergrad parametrization type, to specify what are the parameters that the optimization should be performed upon.
 
 # Example
+`basic.py`
 ```python
 from hpman.m import _
 from hpnevergrad import hpng
@@ -33,6 +34,28 @@ if __name__ == "__main__":
     print(recommendation.kwargs)
 
 >>>{'architecture': 'conv', 'batch_size': 1.4889356356452565, 'learning_rate': 0.0016799143450021905}
+```
+
+# hpng: The Command Line Tool
+
+Besides using  `hpng.get_parametrization` and `hpng.get_objective_function` in you code, we also come with a command line tool hpng to provide similar functions to any existing file using hpman.
+
+`src.py`
+```python
+def train() -> float:
+    lr = _('lr', 1e-3, range=[1e-3, 1.0], scale='log')
+    bs = _('bs', 1, range=[1, 12])
+    architecture = _('architecture', 'conv', choices=['conv', 'fc'])
+    accuracy = (lr - 0.2)**2 + (bs - 4)**2 + (0 if architecture == "conv" else 10)
+    return accuracy
+```
+
+In shell:
+```shell
+hpng src.py:train
+{'architecture': 'fc', 'bs': 1.70302632074525, 'lr': 0.0012628999415326785}
+hpng src.py:train --budget 10
+{'architecture': 'fc', 'bs': 2.039529723147301, 'lr': 0.0016307524751455055}
 ```
 
 
