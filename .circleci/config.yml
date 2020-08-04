@@ -11,9 +11,12 @@ jobs:
       - python/load-cache
       - run: pip install --user -r requirements.txt -r requirements.dev.txt
       - python/save-cache
-      - run:
-          command: pytest
-          name: Test
+      - run: make test
+      - store_test_results:
+          path: test-results
+      - store_artifacts:
+          path: test-results
+      - run: bash <(curl -s https://codecov.io/bash)
 
 workflows:
   main:

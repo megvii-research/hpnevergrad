@@ -1,11 +1,10 @@
-import nevergrad as ng
-import argparse
-import hpman
-from hpman import L
-import numpy as np
-import typing as tp
-from typing import Callable
 import importlib
+from typing import Callable
+
+import hpman
+import nevergrad as ng
+import numpy as np
+from hpman import L
 
 
 class NgMethod(object):
@@ -16,11 +15,10 @@ class NgMethod(object):
     value = None  # type: float
     """Elaborate value"""
 
-    hint = None  # type: Dict[TODO]
+    hint = None  # type: dict
     """Hints of the hyperparameter."""
 
-    # XXX: (https://en.wikipedia.org/wiki/Passive_data_structure)
-    bounds_kwargs = None  # type: Dict[TODO]
+    bounds_kwargs = None  
     """Save `set_bounds()` kwargs from hpman's hint."""
     mutation_kwargs = None
     """Save `set_mutation()` kwargs from hpman's hint."""
@@ -31,8 +29,8 @@ class NgMethod(object):
 
     def __init__(self, value, hint):
         """
-        :param value: float. Initial value of the hyparameter. 
-        :param hint: Dict. Hints provided by user of this occurrence 
+        :param value: float. Initial value of the hyparameter.  
+        :param hint: Dict. Hints provided by user of this occurrence  
             of the hyperparameter.
         :bounds_kwargs: Dict. Save `set_bounds()` kwargs from hpman's hint.
         :mutation_kwargs: Dict. Save `set_mutation()` kwargs from hpman's hint.
@@ -48,7 +46,7 @@ class NgMethod(object):
 
     def get_sets(self):
         """
-        Save specific behaviors kwargs from hpman's hint to feed nevergrad 
+        Save specific behaviors kwargs from hpman's hint to feed nevergrad  
             methods, including set_bounds, set_mutation, set_integer_casting.
         """
         # Save set_bounds kwargs from hpman's hint.
@@ -71,7 +69,7 @@ class NgMethod(object):
 
         # Save set_integer_casting kwargs from hpman's hint.
         if 'set_integer_casting' in self.hint.keys(
-        ) and self.hint['set_integer_casting'] == True:
+        ) and self.hint['set_integer_casting'] is True:
             self.casting_kwargs['set_integer_casting'] = self.hint.pop(
                 'set_integer_casting')
 

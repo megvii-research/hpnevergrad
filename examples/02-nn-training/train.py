@@ -1,24 +1,24 @@
 #!/usr/bin/env python3
-from tqdm import tqdm
-import functools
-import numpy as np
 import argparse
-import torch
-import yaml
-from torch import optim
+import functools
 import os
 
-from hpman.m import _
-import hpargparse
-from hpnevergrad import hpng
 import nevergrad as ng
+import numpy as np
+import yaml
+from hpman.m import _
+from tqdm import tqdm
+
+import hpargparse
+import torch
+from hpnevergrad import hpng
+from torch import optim
 
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
 def run():
     parser = argparse.ArgumentParser()
-    #_.parse_file(BASE_DIR)
     hpargparse.bind(parser, _)
     parser.parse_args()  # we need not to use args
 

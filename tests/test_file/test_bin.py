@@ -1,7 +1,7 @@
+import nevergrad as ng
 from hpman.m import _
 
 from hpnevergrad import hpng
-import nevergrad as ng
 
 
 def train() -> float:

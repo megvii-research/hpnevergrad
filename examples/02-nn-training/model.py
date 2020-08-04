@@ -1,7 +1,8 @@
+from hpman.m import _
+
 import torch
 from torch import nn
 from torch.nn import functional as F
-from hpman.m import _
 
 
 class EnsureFloat(nn.Module):

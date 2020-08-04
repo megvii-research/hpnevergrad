@@ -1,7 +1,9 @@
-from torchvision.datasets import MNIST
-import torch
 import functools
+
 import numpy as np
+
+import torch
+from torchvision.datasets import MNIST
 
 
 @functools.lru_cache(maxsize=2)

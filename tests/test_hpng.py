@@ -1,7 +1,7 @@
-import pytest
 import hpman
-import argparse
 import nevergrad as ng
+import pytest
+
 from hpnevergrad import hpng
 
 
