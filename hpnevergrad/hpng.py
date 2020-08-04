@@ -186,9 +186,7 @@ def get_objective_function(train: Callable[[], float],
     return objective_function
 
 
-#hpng command line tool
-
-
+# hpng command line tool
 def optimizer_warpper(optim_type: str, budget: int,
                       param: ng.p.Instrumentation):
     optim = ng.optimizers.registry[optim_type](parametrization=param,
@@ -220,7 +218,6 @@ def import_func(module: str, obj: str):
     # make the module readable for importlib
     module = module.replace('/', '.')
     module = module.rsplit('.', 1)[0]
-
     mod = importlib.import_module(module)
 
     try:

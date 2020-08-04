@@ -18,7 +18,7 @@ setuptools.setup(
     name="hpnevergrad",
     version=pkginfo["__version__"],
     author="Xuehan Tan",
-    author_email="tanxuehan@hotmail.com",
+    author_email="tanxuehan@megvii.com",
     description="A nevergrad extension for hpman",
     long_description=long_description,
     long_description_content_type="text/markdown",
