@@ -8,3 +8,6 @@ __pycache__/
 /dist
 /build
 /test-results
+/_build
+/_static
+/_templates

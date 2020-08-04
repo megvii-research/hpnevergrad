@@ -18,7 +18,7 @@ class NgMethod(object):
     hint = None  # type: dict
     """Hints of the hyperparameter."""
 
-    bounds_kwargs = None  
+    bounds_kwargs = None
     """Save `set_bounds()` kwargs from hpman's hint."""
     mutation_kwargs = None
     """Save `set_mutation()` kwargs from hpman's hint."""
@@ -220,8 +220,8 @@ def import_func(module: str, obj: str):
 
     try:
         func = getattr(mod, obj)
-    except:
-        raise ImportError("Failed to find attribute %r in %r." % (obj, module))
+    except ImportError:
+        print("Failed to find attribute %r in %r." % (obj, module))
 
     if func is None:
         raise ImportError("Failed to find application object: %r" % obj)

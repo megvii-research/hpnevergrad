@@ -1,15 +1,12 @@
-import functools
-
-import numpy as np
-
-import torch
 from torchvision.datasets import MNIST
+import torch
+import functools
+import numpy as np
 
 
 @functools.lru_cache(maxsize=2)
 def get_mnist_dataset(train):
-    #return MNIST("/data", train=train, download=True)
-    return MNIST("/home/tanxh/data", train=train)
+    return MNIST("/data", train=train, download=True)
 
 
 def get_data_and_labels(dataset_type):

@@ -19,8 +19,8 @@ format:
 	yapf -i --style pep8 --recursive examples hpnevergrad tests
 
 style-check:
-	flake8 --ignore E501,E203,F401,W503,W504 hpnevergrad examples tests
-	mypy hpnevergrad --ignore-missing-imports
+	mypy --ignore-missing-imports hpnevergrad
+	# flake8 --ignore E501,E203,F401,W503,W504 hpnevergrad examples tests
 
 serve-coverage-report:
 	cd test-results/htmlcov && python3 -m http.server

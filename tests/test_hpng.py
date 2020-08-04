@@ -23,10 +23,10 @@ class Test(object):
         arr2 = arr2_hpm('arr2', [
             300,
         ],
-                        method='constraint',
-                        set_integer_casting=True,
-                        exponent=3,
-                        custom='cauchy')
+            method='constraint',
+            set_integer_casting=True,
+            exponent=3,
+            custom='cauchy')
         parametrization = hpng.get_parametrization(arr2_hpm)
         assert 'arr2' in parametrization.kwargs.keys()
 
