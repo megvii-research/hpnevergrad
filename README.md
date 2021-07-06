@@ -57,5 +57,3 @@ hpng src.py:train
 hpng src.py:train --budget 10
 {'architecture': 'fc', 'bs': 2.039529723147301, 'lr': 0.0016307524751455055}
 ```
-
-

@@ -29,8 +29,8 @@ class NgMethod(object):
 
     def __init__(self, value, hint):
         """
-        :param value: float. Initial value of the hyparameter.  
-        :param hint: Dict. Hints provided by user of this occurrence  
+        :param value: float. Initial value of the hyparameter.
+        :param hint: Dict. Hints provided by user of this occurrence
             of the hyperparameter.
         :bounds_kwargs: Dict. Save `set_bounds()` kwargs from hpman's hint.
         :mutation_kwargs: Dict. Save `set_mutation()` kwargs from hpman's hint.
@@ -46,32 +46,37 @@ class NgMethod(object):
 
     def get_sets(self):
         """
-        Save specific behaviors kwargs from hpman's hint to feed nevergrad  
+        Save specific behaviors kwargs from hpman's hint to feed nevergrad
             methods, including set_bounds, set_mutation, set_integer_casting.
         """
         # Save set_bounds kwargs from hpman's hint.
-        if 'range' in self.hint.keys():
-            self.bounds_kwargs['lower'], self.bounds_kwargs[
-                'upper'] = self.hint.pop('range')
-        if 'method' in self.hint.keys():
-            self.bounds_kwargs['method'] = self.hint.pop('method')
-        if 'full_range_sampling' in self.hint.keys():
-            self.bounds_kwargs['full_range_sampling'] = self.hint.pop(
-                'full_range_sampling')
+        if "range" in self.hint.keys():
+            self.bounds_kwargs["lower"], self.bounds_kwargs["upper"] = self.hint.pop(
+                "range"
+            )
+        if "method" in self.hint.keys():
+            self.bounds_kwargs["method"] = self.hint.pop("method")
+        if "full_range_sampling" in self.hint.keys():
+            self.bounds_kwargs["full_range_sampling"] = self.hint.pop(
+                "full_range_sampling"
+            )
 
         # Save set_mutation kwargs from hpman's hint.
-        if 'sigma' in self.hint.keys():
-            self.mutation_kwargs['sigma'] = self.hint.pop('sigma')
-        if 'exponent' in self.hint.keys():
-            self.mutation_kwargs['exponent'] = self.hint.pop('exponent')
-        if 'custom' in self.hint.keys():
-            self.mutation_kwargs['custom'] = self.hint.pop('custom')
+        if "sigma" in self.hint.keys():
+            self.mutation_kwargs["sigma"] = self.hint.pop("sigma")
+        if "exponent" in self.hint.keys():
+            self.mutation_kwargs["exponent"] = self.hint.pop("exponent")
+        if "custom" in self.hint.keys():
+            self.mutation_kwargs["custom"] = self.hint.pop("custom")
 
         # Save set_integer_casting kwargs from hpman's hint.
-        if 'set_integer_casting' in self.hint.keys(
-        ) and self.hint['set_integer_casting'] is True:
-            self.casting_kwargs['set_integer_casting'] = self.hint.pop(
-                'set_integer_casting')
+        if (
+            "set_integer_casting" in self.hint.keys()
+            and self.hint["set_integer_casting"] is True
+        ):
+            self.casting_kwargs["set_integer_casting"] = self.hint.pop(
+                "set_integer_casting"
+            )
 
     def add_sets(self):
         """
@@ -89,10 +94,10 @@ class NgMethod(object):
 
     def log_ng(self):
         """
-        :return: nevergrad.p.Log. 
+        :return: nevergrad.p.Log.
         """
-        self.hint.pop('scale')
-        self.hint['init'] = self.value
+        self.hint.pop("scale")
+        self.hint["init"] = self.value
         self.get_sets()
         self.method = ng.p.Log(**self.hint)
         self.add_sets()
@@ -102,7 +107,7 @@ class NgMethod(object):
         """
         :return: nevergrad.p.Scalar.
         """
-        self.hint['init'] = self.value
+        self.hint["init"] = self.value
         self.get_sets()
         self.method = ng.p.Scalar(**self.hint)
         self.add_sets()
@@ -110,24 +115,24 @@ class NgMethod(object):
 
     def choice_ng(self):
         """
-        :return: nevergrad.p.Choice. 
+        :return: nevergrad.p.Choice.
         """
         self.method = ng.p.Choice(**self.hint)
         return self.method
 
     def transition_choice_ng(self):
         """
-        :return: nevergrad.p.TransitionChoice. 
+        :return: nevergrad.p.TransitionChoice.
         """
-        self.hint.pop('transitions')
+        self.hint.pop("transitions")
         self.method = ng.p.TransitionChoice(**self.hint)
         return self.method
 
     def array_ng(self):
         """
-        :return: nevergrad.p.Array.  
+        :return: nevergrad.p.Array.
         """
-        self.hint['init'] = np.array(self.value)
+        self.hint["init"] = np.array(self.value)
         self.get_sets()
         self.method = ng.p.Array(**self.hint)
         self.add_sets()
@@ -135,19 +140,19 @@ class NgMethod(object):
 
 
 def get_method_type(value, hint):
-    if 'choices' in hint.keys():
-        if 'transitions' in hint.keys():
-            method_type = 'transition_choice_ng'
+    if "choices" in hint.keys():
+        if "transitions" in hint.keys():
+            method_type = "transition_choice_ng"
         else:
-            method_type = 'choice_ng'
+            method_type = "choice_ng"
     elif isinstance(value, (float, int)):
-        if 'scale' in hint.keys() and hint['scale'] == 'log':
-            method_type = 'log_ng'
+        if "scale" in hint.keys() and hint["scale"] == "log":
+            method_type = "log_ng"
         else:
-            method_type = 'scalar_ng'
+            method_type = "scalar_ng"
     # Hpman can not support ndarray type, we transfer list to ndarray.
     elif isinstance(value, list):
-        method_type = 'array_ng'
+        method_type = "array_ng"
     else:
         raise TypeError("type error")
     return method_type
@@ -163,8 +168,8 @@ def get_parametrization(hp_mgr: hpman.HyperParameterManager):
     kw = {}
     for k, d in sorted(hp_mgr.db.group_by("name").items()):
         for i, oc in enumerate(
-                d.select(L.exist_attr("filename")).sorted(
-                    L.order_by("filename"))):
+            d.select(L.exist_attr("filename")).sorted(L.order_by("filename"))
+        ):
             if len(oc["hints"]) > 0:
                 hint = oc["hints"]
                 value = oc["value"]
@@ -175,8 +180,9 @@ def get_parametrization(hp_mgr: hpman.HyperParameterManager):
     return ng.p.Instrumentation(**kw)
 
 
-def get_objective_function(train: Callable[[], float],
-                           hpm: hpman.HyperParameterManager):
+def get_objective_function(
+    train: Callable[[], float], hpm: hpman.HyperParameterManager
+):
     def objective_function(**kwargs):
         hpm.set_values(kwargs)
         return train()
@@ -185,10 +191,8 @@ def get_objective_function(train: Callable[[], float],
 
 
 # hpng command line tool
-def optimizer_warpper(optim_type: str, budget: int,
-                      param: ng.p.Instrumentation):
-    optim = ng.optimizers.registry[optim_type](parametrization=param,
-                                               budget=budget)
+def optimizer_warpper(optim_type: str, budget: int, param: ng.p.Instrumentation):
+    optim = ng.optimizers.registry[optim_type](parametrization=param, budget=budget)
     return optim
 
 
@@ -214,8 +218,8 @@ def import_func(module: str, obj: str):
     """
 
     # make the module readable for importlib
-    module = module.replace('/', '.')
-    module = module.rsplit('.', 1)[0]
+    module = module.replace("/", ".")
+    module = module.rsplit(".", 1)[0]
     mod = importlib.import_module(module)
 
     try:
