@@ -22,7 +22,7 @@ setuptools.setup(
     description="A nevergrad extension for hpman",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    #url="https://github.com/megvii-research/hpnevergrad",
+    # url="https://github.com/megvii-research/hpnevergrad",
     packages=setuptools.find_packages(),
     install_requires=requirements,
     scripts=["bin/hpng"],

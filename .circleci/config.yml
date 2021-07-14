@@ -5,7 +5,9 @@ orbs:
 
 jobs:
   build-and-test:
-    executor: python/default
+    # executor: python/default
+    docker:
+      - image: circleci/python:3.6.7-jessie
     steps:
       - checkout
       - python/load-cache
@@ -22,4 +24,3 @@ workflows:
   main:
     jobs:
       - build-and-test
-
