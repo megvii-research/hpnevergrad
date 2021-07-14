@@ -4,6 +4,6 @@ coverage
 flake8
 isort
 mypy
-pre-commit
+nevergrad[benchmark]pre-commit
 pytest
 pytest-cov

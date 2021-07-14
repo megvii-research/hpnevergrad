@@ -28,7 +28,7 @@ class Test(object):
             method="constraint",
             set_integer_casting=True,
             exponent=3,
-            custom="cauchy",
+            # custom="cauchy",
         )
         parametrization = hpng.get_parametrization(arr2_hpm)
         assert "arr2" in parametrization.kwargs.keys()
@@ -49,7 +49,7 @@ class Test(object):
             scale="log",
             exponent=3.0,
             sigma=3,
-            custom="gaussian",
+            # custom="gaussian",
         )
         parametrization = hpng.get_parametrization(log2_hpm)
         assert "log2" in parametrization.kwargs.keys()
